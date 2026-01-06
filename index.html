@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GelSafe AI | Expertise Sinistre Immédiate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'scan': 'scan 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        scan: {
+                            '0%': { top: '0%', opacity: '0' },
+                            '10%': { opacity: '1', boxShadow: '0 0 15px #38bdf8' },
+                            '90%': { opacity: '1', boxShadow: '0 0 15px #38bdf8' },
+                            '100%': { top: '100%', opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { background-color: #020617; color: #e2e8f0; }
+        
+        /* Background Grid */
+        .bg-grid {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+
+        /* Glass Cards */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
+        }
+
+        /* Glowing Button */
+        .btn-glow {
+            position: relative;
+            background: linear-gradient(90deg, #0284c7, #2563eb);
+            z-index: 1;
+        }
+        .btn-glow::before {
+            content: "";
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #0ea5e9, #6366f1, #0ea5e9);
+            z-index: -1;
+            background-size: 400%;
+            border-radius: 14px;
+            opacity: 0;
+            transition: 0.5s;
+        }
+        .btn-glow:hover::before {
+            opacity: 1;
+            filter: blur(10px);
+            animation: glow 20s linear infinite;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #38bdf8;
+            box-shadow: 0 0 10px #38bdf8, 0 0 20px #38bdf8;
+            top: 0;
+            left: 0;
+            display: none;
+            z-index: 20;
+            animation: scan 2s infinite linear;
+        }
+        
+        /* Input file reset */
+        input[type="file"]::file-selector-button { display: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative overflow-x-hidden selection:bg-cyan-500 selection:text-white">
+
+    <!-- Background Elements -->
+    <div class="fixed inset-0 z-0">
+        <div class="absolute inset-0 bg-slate-950"></div>
+        <div class="absolute inset-0 bg-grid"></div>
+        <!-- Orbs -->
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="fixed w-full top-0 z-50 px-4 md:px-6 py-4">
+        <nav class="max-w-6xl mx-auto glass-panel rounded-2xl px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="location.reload()">
+                <div class="relative w-9 h-9 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-blue-500 rounded-lg opacity-20 group-hover:opacity-40 transition"></div>
+                    <span class="relative font-display font-bold text-white text-xl">G</span>
+                </div>
+                <span class="font-display font-bold text-lg tracking-tight text-white">GEL<span class="text-cyan-400">SAFE</span><span class="text-xs align-top opacity-50 ml-1">AI</span></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700/50">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                    <span class="text-xs font-medium text-cyan-100/80">Gemini 1.5 Pro</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- INPUT SECTION -->
+    <main id="input-section" class="relative z-10 pt-32 pb-20 px-6 flex-grow flex flex-col justify-center transition-all duration-700">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm font-medium mb-8 animate-pulse-slow">
+                <i data-lucide="snowflake" class="w-4 h-4"></i> Spécial Sinistres Hivernaux
+            </div>
+
+            <h1 class="font-display text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
+                Le froid gèle l'eau.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500">
+                    Pas vos droits.
+                </span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+                Ne laissez pas les petits caractères geler votre indemnisation. Notre IA juridique analyse votre contrat en <span class="text-white font-semibold">12 secondes</span>.
+            </p>
+
+            <!-- Upload Card -->
+            <div class="relative group max-w-2xl mx-auto perspective-1000">
+                <!-- Glow Effect behind card -->
+                <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl blur opacity-10 group-hover:opacity-30 transition duration-1000"></div>
+                
+                <div class="relative glass-panel rounded-3xl p-1 overflow-hidden">
+                    <div id="scanner" class="scan-line"></div>
+
+                    <div id="drop-zone" class="bg-slate-900/50 rounded-[1.3rem] border border-dashed border-slate-700 hover:border-cyan-500/50 hover:bg-slate-800/50 transition-all duration-300 cursor-pointer py-16 px-6 relative flex flex-col items-center justify-center min-h-[300px]">
+                        <input type="file" id="file-upload" class="hidden" accept=".pdf" />
+                        
+                        <!-- Initial State -->
+                        <div id="upload-content" class="text-center transition-all duration-300">
+                            <div class="w-20 h-20 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 border border-slate-700 shadow-xl">
+                                <i data-lucide="upload-cloud" class="w-10 h-10 text-cyan-400"></i>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold text-white mb-2">Déposez votre contrat</h3>
+                            <p class="text-slate-400 text-sm mb-8">PDF uniquement (Max 10 Mo)</p>
+                            
+                            <button id="cta-btn" class="btn-glow text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-3 mx-auto shadow-lg shadow-blue-900/50 hover:shadow-cyan-500/40 transition-all">
+                                <span id="btn-text">Lancer le diagnostic</span>
+                                <i id="btn-icon" data-lucide="sparkles" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <!-- File Selected / Loading State -->
+                        <div id="file-selected" class="hidden flex-col items-center w-full max-w-sm">
+                            <div class="w-16 h-16 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 border border-emerald-500/20">
+                                <i data-lucide="file-check" class="w-8 h-8 text-emerald-400"></i>
+                            </div>
+                            <p id="filename" class="font-bold text-white text-lg mb-1 truncate w-full text-center">contrat.pdf</p>
+                            <p id="status-text" class="text-sm text-cyan-400 mb-6 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span> Prêt à l'analyse
+                            </p>
+                        </div>
+
+                        <p id="error-msg" class="text-red-400 text-sm mt-6 hidden bg-red-950/30 px-4 py-2 rounded-lg border border-red-900/50"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex flex-wrap justify-center gap-6 md:gap-12 text-xs font-medium text-slate-500 uppercase tracking-widest">
+                <div class="flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-slate-400"></i> Chiffré AES-256</div>
+                <div class="flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-slate-400"></i> Analyse Instantanée</div>
+                <div class="flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4 text-slate-400"></i> Pas de stockage</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- RESULT SECTION -->
+    <main id="result-section" class="relative z-10 pt-32 pb-20 px-6 hidden flex-grow min-h-screen">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- Header Result -->
+            <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <div class="flex items-center gap-2 text-cyan-400 text-sm font-bold mb-2 uppercase tracking-wider">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i> Analyse Terminée
+                    </div>
+                    <h2 class="font-display text-4xl font-bold text-white">Rapport d'Éligibilité</h2>
+                </div>
+                <button onclick="location.reload()" class="group flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4 group-hover:-rotate-180 transition-transform duration-500"></i>
+                    Nouvelle analyse
+                </button>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                
+                <!-- Score Card -->
+                <div class="lg:col-span-1 glass-panel rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent"></div>
+                    <div class="relative z-10 text-center">
+                        <p class="text-slate-400 text-sm font-medium uppercase tracking-wider mb-4">Score de Couverture</p>
+                        <div class="relative w-40 h-40 mx-auto flex items-center justify-center mb-4">
+                            <!-- Circular Progress Simulation -->
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="80" cy="80" r="70" stroke="rgba(255,255,255,0.1)" stroke-width="12" fill="transparent"/>
+                                <circle id="score-circle" cx="80" cy="80" r="70" stroke="#0ea5e9" stroke-width="12" fill="transparent" stroke-dasharray="440" stroke-dashoffset="100" stroke-linecap="round" class="transition-all duration-1000 ease-out"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="score-val" class="font-display text-5xl font-bold text-white">--</span>
+                                <span class="text-xl text-white/50">%</span>
+                            </div>
+                        </div>
+                        <div id="status-badge" class="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-slate-800 text-slate-300">
+                            Calcul...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="lg:col-span-2 glass-panel rounded-3xl p-8 flex flex-col justify-center">
+                    <h3 class="font-display text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="file-search" class="w-6 h-6 text-blue-400"></i> Synthèse Juridique
+                    </h3>
+                    <p id="ai-summary" class="text-slate-300 leading-relaxed text-lg border-l-2 border-blue-500/30 pl-6 italic">
+                        L'IA analyse les clauses de votre contrat... Veuillez patienter.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Details Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Vigilance Points -->
+                <div class="glass-panel rounded-3xl p-8 border-l-4 border-l-amber-500/50">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-2 bg-amber-500/10 rounded-lg text-amber-500">
+                            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-display text-xl font-bold text-white">Points de Vigilance</h4>
+                    </div>
+                    <ul id="vigilance-list" class="space-y-4">
+                        <!-- Items injected via JS -->
+                        <li class="flex gap-3 text-slate-400 text-sm animate-pulse">
+                            <div class="w-1.5 h-1.5 bg-slate-600 rounded-full mt-2"></div> Chargement des clauses...
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Strategic Advice -->
+                <div class="glass-panel rounded-3xl p-8 border-l-4 border-l-emerald-500/50 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500 rounded-full mix-blend-overlay filter blur-3xl opacity-5 group-hover:opacity-10 transition"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
+                                <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="font-display text-xl font-bold text-white">Conseil Stratégique</h4>
+                        </div>
+                        <p id="ai-advice" class="text-slate-300 text-sm leading-relaxed mb-8">
+                            Génération de la stratégie optimale pour votre déclaration...
+                        </p>
+                        <button class="w-full bg-slate-800 hover:bg-emerald-600/20 hover:text-emerald-400 text-slate-300 border border-slate-700 hover:border-emerald-500/50 py-3 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copier pour ma déclaration
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-slate-600 text-sm relative z-10">
+        <p>&copy; 2026 GelSafe AI. Propulsé par Google Gemini.</p>
+    </footer>
+
+    <script>
+        // --- CONFIGURATION ---
+        const API_KEY = "AIzaSyAFdm-ZBEvfE_P5cYlD3VCgvw577QzCW1I"; // Clé (À sécuriser en prod)
+        lucide.createIcons();
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // --- DOM ELEMENTS ---
+        const els = {
+            dropZone: document.getElementById('drop-zone'),
+            fileInput: document.getElementById('file-upload'),
+            uploadContent: document.getElementById('upload-content'),
+            fileSelected: document.getElementById('file-selected'),
+            fileName: document.getElementById('filename'),
+            statusText: document.getElementById('status-text'),
+            ctaBtn: document.getElementById('cta-btn'),
+            btnText: document.getElementById('btn-text'),
+            scanner: document.getElementById('scanner'),
+            errorMsg: document.getElementById('error-msg'),
+            inputSection: document.getElementById('input-section'),
+            resultSection: document.getElementById('result-section'),
+            aiSummary: document.getElementById('ai-summary'),
+            scoreVal: document.getElementById('score-val'),
+            statusBadge: document.getElementById('status-badge'),
+            vigilanceList: document.getElementById('vigilance-list'),
+            aiAdvice: document.getElementById('ai-advice'),
+            scoreCircle: document.getElementById('score-circle')
+        };
+
+        // --- EVENT LISTENERS ---
+        els.dropZone.addEventListener('click', (e) => {
+            if(e.target !== els.ctaBtn && !els.ctaBtn.contains(e.target)) els.fileInput.click();
+        });
+
+        els.ctaBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (els.fileInput.files.length === 0) els.fileInput.click();
+            else processFile(els.fileInput.files[0]);
+        });
+
+        els.fileInput.addEventListener('change', () => {
+            if (els.fileInput.files.length > 0) {
+                const file = els.fileInput.files[0];
+                els.uploadContent.classList.add('hidden');
+                els.fileSelected.classList.remove('hidden');
+                els.fileSelected.classList.add('flex');
+                els.fileName.textContent = file.name;
+                els.btnText.textContent = "Analyser le contrat";
+                els.errorMsg.classList.add('hidden');
+                
+                // Reset button style
+                els.ctaBtn.classList.add('w-full', 'justify-center', 'mt-4');
+            }
+        });
+
+        // Drag & Drop visual effects
+        ['dragenter', 'dragover'].forEach(eventName => {
+            els.dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                els.dropZone.classList.add('border-cyan-500', 'bg-slate-800');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            els.dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                els.dropZone.classList.remove('border-cyan-500', 'bg-slate-800');
+            });
+        });
+
+        els.dropZone.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files.length) {
+                els.fileInput.files = e.dataTransfer.files;
+                // Trigger change event manually
+                const event = new Event('change');
+                els.fileInput.dispatchEvent(event);
+            }
+        });
+
+        // --- CORE LOGIC ---
+        async function processFile(file) {
+            // UI Update
+            els.btnText.textContent = "Extraction en cours...";
+            document.getElementById('btn-icon').setAttribute('data-lucide', 'loader-2');
+            document.getElementById('btn-icon').classList.add('animate-spin');
+            lucide.createIcons();
+            
+            els.scanner.style.display = 'block';
+            els.dropZone.classList.add('cursor-wait', 'opacity-80');
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const text = await extractTextFromPDF(arrayBuffer);
+                
+                if(!text || text.length < 50) throw new Error("Impossible de lire le texte (PDF image ?)");
+
+                els.btnText.textContent = "Analyse IA...";
+                els.statusText.innerHTML = '<span class="text-blue-400">Gemini lit les clauses...</span>';
+                
+                const analysis = await callGeminiAPI(text);
+                displayResults(analysis);
+
+            } catch (err) {
+                console.error(err);
+                els.scanner.style.display = 'none';
+                els.dropZone.classList.remove('cursor-wait', 'opacity-80');
+                els.btnText.textContent = "Réessayer";
+                document.getElementById('btn-icon').setAttribute('data-lucide', 'refresh-cw');
+                document.getElementById('btn-icon').classList.remove('animate-spin');
+                lucide.createIcons();
+                els.errorMsg.textContent = "Erreur : " + err.message;
+                els.errorMsg.classList.remove('hidden');
+            }
+        }
+
+        async function extractTextFromPDF(arrayBuffer) {
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            let fullText = "";
+            const maxPages = Math.min(pdf.numPages, 5);
+            for (let i = 1; i <= maxPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map(item => item.str).join(' ') + "\n";
+            }
+            return fullText;
+        }
+
+        async function callGeminiAPI(contractText) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            const safeText = contractText.substring(0, 30000); // 1.5 Flash gère bien le contexte
+            
+            const prompt = `
+            Rôle : Expert juridique assurance habitation (Spécialité Gel/Hiver).
+            Tâche : Analyse ce contrat d'assurance.
+            Sortie : JSON uniquement.
+            Structure :
+            {
+                "score": (0-100, int),
+                "summary": (Résumé 1 phrase pro),
+                "vigilance": [(Array 3 points courts sur exclusions/franchises/délais)],
+                "advice": (Conseil actionnable pour la déclaration),
+                "status": ("OPTIMAL", "ATTENTION", ou "CRITIQUE")
+            }
+            Contrat : ${safeText}
+            `;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+
+            if (!response.ok) throw new Error("Gemini API Error");
+            const data = await response.json();
+            let textRes = data.candidates[0].content.parts[0].text;
+            textRes = textRes.replace(/```json/g, '').replace(/```/g, '').trim();
+            return JSON.parse(textRes);
+        }
+
+        function displayResults(data) {
+            // Fill Data
+            els.aiSummary.textContent = data.summary;
+            els.scoreVal.textContent = data.score;
+            els.aiAdvice.textContent = data.advice;
+            
+            // Badge Styling
+            const badgeClasses = {
+                "OPTIMAL": "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+                "ATTENTION": "bg-amber-500/20 text-amber-300 border border-amber-500/30",
+                "CRITIQUE": "bg-red-500/20 text-red-300 border border-red-500/30"
+            };
+            els.statusBadge.className = `inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${badgeClasses[data.status] || badgeClasses["ATTENTION"]}`;
+            els.statusBadge.textContent = data.status;
+
+            // List
+            els.vigilanceList.innerHTML = data.vigilance.map(item => `
+                <li class="flex items-start gap-3 text-slate-300 text-sm">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"></i>
+                    <span>${item}</span>
+                </li>
+            `).join('');
+            lucide.createIcons();
+
+            // Circular Progress Animation logic
+            const circumference = 440; // 2 * pi * 70
+            const offset = circumference - (data.score / 100) * circumference;
+            
+            // Color based on score
+            let strokeColor = '#ef4444'; // Red
+            if(data.score > 40) strokeColor = '#f59e0b'; // Amber
+            if(data.score > 70) strokeColor = '#10b981'; // Emerald
+            els.scoreCircle.style.stroke = strokeColor;
+
+            // Transition
+            els.inputSection.style.transform = 'scale(0.95)';
+            els.inputSection.style.opacity = '0';
+            
+            setTimeout(() => {
+                els.inputSection.classList.add('hidden');
+                els.resultSection.classList.remove('hidden');
+                
+                // Animate entry
+                els.resultSection.animate([
+                    { opacity: 0, transform: 'translateY(20px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], { duration: 600, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+
+                // Animate Gauge
+                setTimeout(() => {
+                    els.scoreCircle.style.strokeDashoffset = offset;
+                }, 500);
+
+            }, 500);
+        }
+    </script>
+</body>
+</html>
